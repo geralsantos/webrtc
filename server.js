@@ -10,7 +10,7 @@ io.on('connection', (socket) => {
 socket.on('initiate', () => {
     initiator = true;
     io.emit('initiate');
-    io.emit('consult_initiate',{initiator:initiator});
+   // io.emit('consult_initiate',{initiator:initiator});
 });
 socket.on('consult_initiate', () => {
     io.emit('consult_initiate',{initiator:initiator});

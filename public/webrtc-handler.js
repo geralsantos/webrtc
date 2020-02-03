@@ -1,17 +1,20 @@
 var socket = io.connect();
-var Peer = require('simple-peer')
-var initiateBtn = document.getElementById('initiateBtn');
-var lookBtn = document.getElementById('lookBtn');
-var video = document.querySelector('video');
+var Peer,
+initiateBtn= document.getElementById('initiateBtn'),
+txtarea= document.getElementById('txtarea'),
+lookBtn = document.getElementById('lookBtn'),
+video= document.querySelector('video');
 
 var initiator = false;
 
 initiateBtn.onclick = (e) => {
+     Peer = require('simple-peer')
     initiator = true;
     geral();
     socket.emit('initiate');
 }
 lookBtn.onclick = (e) => {
+    Peer = require('simple-peer')
     initiator = false;
     geral();
 }/*
@@ -50,34 +53,38 @@ socket.on('consult_initiate', (response) => {
 
 const stunServerConfig = {  
     iceServers: [{  
-      url: "stun:stun01.sipphone.com",  
+      urls: "stun:stun01.sipphone.com",  
       username: "gera",  
       credential: "123"  
     }]  
   };
+
+  
 function gotMedia(stream) {
-    var peer = null;
+    
+    var peer = new Peer();
     console.log("gotMedia initiator",initiator)
     if (initiator) {
         peer = new Peer({
             initiator:initiator,
             stream,
-           // config: stunServerConfig
+            config: stunServerConfig
         });
     } else {
         peer = new Peer({
             trickle: false,
-            //config: stunServerConfig
+           // stream,
+            config: stunServerConfig
         });
     }
     if (!initiator) {
-        socket.emit('traer_token');
+      /*  socket.emit('traer_token');
         console.log('traer_token')
 
         socket.on('mostrar_token', (data) => {
             console.log('mostrar_token',data)
             peer.signal(JSON.parse(data))
-        })
+        })*/
     }
     peer.on('signal', function (data) {
 console.log("signal")
@@ -98,7 +105,9 @@ console.log("signal")
           }
         video.play();  
       })
-
-   /* video.srcObject = stream;
-    video.play();*/
+      if (initiator) {
+        video.srcObject = stream;
+        video.play();
+      }
+    
 }
